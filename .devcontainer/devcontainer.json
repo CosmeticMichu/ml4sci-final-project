@@ -3,10 +3,10 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "myaaghubi.andromeda-mariana-vscode" // Andromeda Theme by Mariana
+        "myaaghubi.andromeda-mariana-vscode"
       ],
       "settings": {
-        "workbench.colorTheme": "Andromeda Mariana-Italic"
+        "workbench.colorTheme": "Andromeda Mariana - Italic Bordered"
       }
     }
   }
