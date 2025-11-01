@@ -1,3 +1,13 @@
 {
-  "build": { "dockerfile": "Dockerfile" }
+  "build": { "dockerfile": "Dockerfile" },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "myaaghubi.andromeda-mariana-vscode" // Andromeda Theme by Mariana
+      ],
+      "settings": {
+        "workbench.colorTheme": "Andromeda Mariana-Italic"
+      }
+    }
+  }
 }
