@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:3.8
+FROM mcr.microsoft.com/devcontainers/python:3
 
 # installs packages
 RUN apt-get update && \
