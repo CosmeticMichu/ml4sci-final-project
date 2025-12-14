@@ -9,7 +9,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 
 sys.path.append('../')
-from models import cnn
+from models import cnn, cnn_rnn
 from potentials import exponential_cosine
 
 if not os.path.exists('output/'):
@@ -48,7 +48,6 @@ def make_data(k):
     df.to_pickle('output/data_k%s.pkl'%k)
     return df
 
-
 def train(k):
     
     print('processing dataset for k=', k, '...')
@@ -64,9 +63,10 @@ def train(k):
  
     # train / test split
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, random_state=923) #123
+        X, y, test_size=0.3, random_state=3)
     
-    # load the model
+    # ====== load the model and train cnn ======
+    print(' >>>>> Training CNN model...')
     model, model_name = cnn(input_shape=(X.shape[1], 1))
 
     if not os.path.exists('output/'+model_name):
@@ -80,10 +80,64 @@ def train(k):
         epochs=100,
         validation_split=0.3,
         verbose=1,
-        #callbacks=[reduce_lr]
         )
 
-    # save model and training history
+    model.save('output/'+model_name+'/model_k{}.h5'.format(k))
+    
+    with open('output/'+model_name+'/train_hist_k{}.pkl'.format(k), 'wb') as handle:
+        pickle.dump(history.history, handle)
+
+    # predict
+    predictions = model.predict(X_test)
+    predictions = np.array([p[0] for p in predictions]).flatten()
+    np.save('output/'+model_name+'/predictions_k{}.npy'.format(k), predictions)
+    np.save('output/'+model_name+'/y_test_k%s.npy'%k, y_test)
+
+    # # ====== load the model and train rnn ======
+    # print(' >>>>> Training RNN model...')
+    # model, model_name = rnn(input_shape=(X.shape[1], 1))
+
+    # if not os.path.exists('output/'+model_name):
+    #     os.makedirs('output/'+model_name)
+
+    # # fit model
+    # history = model.fit(
+    #     X_train,
+    #     y_train,
+    #     batch_size=32,
+    #     epochs=100,
+    #     validation_split=0.3,
+    #     verbose=1,
+    #     )
+
+    # model.save('output/'+model_name+'/model_k{}.h5'.format(k))
+    
+    # with open('output/'+model_name+'/train_hist_k{}.pkl'.format(k), 'wb') as handle:
+    #     pickle.dump(history.history, handle)
+
+    # # predict
+    # predictions = model.predict(X_test)
+    # predictions = np.array([p[0] for p in predictions]).flatten()
+    # np.save('output/'+model_name+'/predictions_k{}.npy'.format(k), predictions)
+    # np.save('output/'+model_name+'/y_test_k%s.npy'%k, y_test)
+
+    # ====== load the model and train crnn hybrid
+    print(' >>>>> Training CRNN model...')
+    model, model_name = cnn_rnn(input_shape=(X.shape[1], 1))
+
+    if not os.path.exists('output/'+model_name):
+        os.makedirs('output/'+model_name)
+
+    # fit model
+    history = model.fit(
+        X_train,
+        y_train,
+        batch_size=32,
+        epochs=100,
+        validation_split=0.3,
+        verbose=1,
+        )
+
     model.save('output/'+model_name+'/model_k{}.h5'.format(k))
     
     with open('output/'+model_name+'/train_hist_k{}.pkl'.format(k), 'wb') as handle:
